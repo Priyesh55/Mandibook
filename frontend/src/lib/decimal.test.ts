@@ -35,8 +35,8 @@ test("weight x rate is rounded half-up to the rupee, like the server", () => {
 });
 
 test("pieces x rate per piece keeps two decimals", () => {
-  assert.equal(formatScaled(mulRound(p("35"), p("2.4"), 2)), "84");
-  assert.equal(formatScaled(mulRound(p("35"), p("1.91"), 2)), "66.85");
+  assert.equal(formatScaled(mulRound(p("35"), p("2.5"), 2)), "87.5");
+  assert.equal(formatScaled(mulRound(p("35"), p("1.75"), 2)), "61.25");
   assert.equal(formatScaled(mulRound(p("3"), p("0.333"), 2)), "1");            // 0.999
   assert.equal(formatScaled(mulRound(p("1"), p("0.005"), 2)), "0.01");         // a tie goes up
 });

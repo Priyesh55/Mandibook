@@ -63,9 +63,11 @@ class BillCalculatorTest {
     @Test
     void aPerPieceExpenseIsPiecesTimesRateToTwoDecimals() {
         assertThat(BillCalculator.perPieceExpense(10, d("2"))).isEqualByComparingTo("20.00");
-        assertThat(BillCalculator.perPieceExpense(35, d("2.4"))).isEqualByComparingTo("84.00");   // 35 x 2.4
-        assertThat(BillCalculator.perPieceExpense(35, d("1.91"))).isEqualByComparingTo("66.85");  // 35 x 1.91 = 66.85
-        assertThat(BillCalculator.perPieceExpense(0, d("2.4"))).isEqualByComparingTo("0.00");
+        assertThat(BillCalculator.perPieceExpense(35, d("2.5"))).isEqualByComparingTo("87.50");   // synthetic rate: 35 x 2.5
+        assertThat(BillCalculator.perPieceExpense(35, d("1.75"))).isEqualByComparingTo("61.25");  // synthetic rate: 35 x 1.75
+        assertThat(BillCalculator.perPieceExpense(35, d("3"))).as("a different configured rate gives a different amount").isEqualByComparingTo("105.00");
+        assertThat(BillCalculator.perPieceExpense(0, d("2.5"))).isEqualByComparingTo("0.00");
+        assertThat(BillCalculator.perPieceExpense(3, d("0.125"))).as("0.375 rounds half up to two decimals").isEqualByComparingTo("0.38");
         assertThat(BillCalculator.perPieceExpense(1, d("0.005"))).isEqualByComparingTo("0.01");   // half up at two decimals
     }
 

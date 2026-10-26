@@ -19,7 +19,7 @@ test("the financial year runs from 1 April to 31 March", () => {
 
 // the same scenario as the server test BillWorkflowApiIntegrationTest: two lots (35 pieces), one split between two purchasers,
 // two rate-based expenses (heads 1 and 2) and three typed ones
-const RATES: HeadRates = { "1": "2.4", "2": "1.91" };
+const RATES: HeadRates = { "1": "2.5", "2": "1.75" };
 
 function sample() {
   const d = emptyDraft("2026-10-24");
@@ -56,8 +56,8 @@ test("a per-piece expense is pieces x its predefined rate; a typed one is as typ
   const d = sample();
   const pieces = totalPieces(d);
   assert.equal(formatScaled(pieces), "35");
-  assert.equal(formatScaled(expenseAmount(d.expenses[0], RATES, pieces) as bigint), "84");
-  assert.equal(formatScaled(expenseAmount(d.expenses[1], RATES, pieces) as bigint), "66.85");
+  assert.equal(formatScaled(expenseAmount(d.expenses[0], RATES, pieces) as bigint), "87.5");
+  assert.equal(formatScaled(expenseAmount(d.expenses[1], RATES, pieces) as bigint), "61.25");
   assert.equal(formatScaled(expenseAmount(d.expenses[3], RATES, pieces) as bigint), "75.5");
   assert.equal(expenseAmount(emptyExpense(), RATES, pieces), null);
 });
@@ -65,8 +65,8 @@ test("a per-piece expense is pieces x its predefined rate; a typed one is as typ
 test("totals match the server: farmer side and buyer side apart, net to the rupee", () => {
   const t = draftTotals(sample(), RATES);
   assert.equal(t.gross, "40500");
-  assert.equal(t.expenses, "1326.35");
-  assert.equal(t.net, "39174");
+  assert.equal(t.expenses, "1324.25");
+  assert.equal(t.net, "39176");
   assert.equal(t.buyerValue, "18000");
   assert.equal(t.buyerCommission, "900");
   assert.equal(t.buyerPurchaseValue, "18900");
@@ -179,4 +179,13 @@ test("the bhada of the bill details is the Motor Bhada expense, added automatica
   assert.deepEqual(validateDraft(d, RATES, "9"), []);
   d.expenses = [Object.assign(emptyExpense(), { expenseHeadId: "9", amount: "5" })];
   assert.ok(validateDraft(d, RATES, "9").some((p) => p.key === "bill.err.expenseDuplicate"));
+});
+
+test("changing a configured head rate changes the per-piece expense and the totals", () => {
+  const d = sample();
+  const pieces = totalPieces(d);
+  const changed: HeadRates = { ...RATES, "1": "4" };
+  assert.equal(formatScaled(expenseAmount(d.expenses[0], changed, pieces) as bigint), "140");
+  assert.equal(draftTotals(d, changed).expenses, "1376.75"); // 140 + 61.25 + 100 + 75.5 + 1000
+  assert.equal(draftTotals(d, changed).net, "39123");        // 40500 - 1376.75 = 39123.25
 });

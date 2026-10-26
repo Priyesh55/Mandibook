@@ -34,7 +34,9 @@ Not done: no data of the older program, no credentials, no real firm, farmer, bu
 Leftover references: `V1__baseline_schema.sql` still contains a comment that points to a document (`LEGACY_BEHAVIOR_FINDINGS.md`) that is not part of this submission. It was left unchanged because editing an applied Flyway migration changes its checksum.
 
 ## 3. Business figures in tests
-Test fixtures use per-piece rates 2.4 and 1.91 and `docs/business-rules.md` (BR-014, BR-109) records that they are the owner firm's real rates for two expense heads, without saying which. They are small per-piece charges used as arithmetic examples. If the owner considers them confidential, replace the values in the tests and in BR-014 before publishing.
+Per-piece expense rates are master data that each firm configures; the application contains no firm-specific rate. Tests and fixtures in this submission configure clearly synthetic rates themselves (for example 2.5 and 1.75) and check that changing a configured rate changes the calculated expense (`BillCalculatorTest`, `BillWorkflowApiIntegrationTest`, `billDraft.test.ts`, `aadat-mvp-journey.spec.ts`).
+
+**Disclosure.** In the working drafts before this submission, tests, `docs/business-rules.md` and `docs/ai-log.md` used two small per-piece figures that the owner had described as real rates of the firm. They were removed from the files of this repository in the commit that follows the snapshot. This repository's first commit (the working-tree snapshot) and the original development repository still contain them, and this repository's history was deliberately not rewritten. Whether those two figures are confidential is for the owner to decide; the files of the submitted tree no longer contain them.
 
 ## 4. AI contribution
 Almost all code, tests and documents were produced by an AI agent (Claude Code, model recorded in commit trailers) in sessions directed and reviewed by the project owner, who made the product and business-rule decisions. See `docs/ai-log.md` (which also records AI mistakes) and `CLAUDE.md` / `docs/AI_POLICY.md` for the controls used. Prompts and transcripts are not stored.

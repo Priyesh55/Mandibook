@@ -61,8 +61,8 @@ class BillWorkflowApiIntegrationTest {
         village = createMaster(mvc, "villages", "Wf Village", null);
         buyer1 = createMaster(mvc, "buyers", "Wf Buyer One", null);
         buyer2 = createMaster(mvc, "buyers", "Wf Buyer Two", null);
-        heads[0] = createExpenseHeadWithRate(mvc, "Wf Head 1", "2.4");    // owner-confirmed real rate 2.4 (BR-014); the head it belongs to is not recorded, the fixture name is generic
-        heads[1] = createExpenseHeadWithRate(mvc, "Wf Head 2", "1.91");   // owner-confirmed real rate 1.91 (BR-014); the head it belongs to is not recorded
+        heads[0] = createExpenseHeadWithRate(mvc, "Wf Head 1", "2.5");    // synthetic per-piece rate, configured by this test as master data
+        heads[1] = createExpenseHeadWithRate(mvc, "Wf Head 2", "1.75");   // synthetic per-piece rate, configured by this test as master data
         for (int i = 2; i < heads.length; i++) heads[i] = createMaster(mvc, "expense-heads", "Wf Head " + (i + 1), null);
         onion = itemId(jdbc, "Onion");
         potato = itemId(jdbc, "Potato");
@@ -145,18 +145,18 @@ class BillWorkflowApiIntegrationTest {
         assertThat(dec(b, "$.lots[0].allocation.weight")).isEqualByComparingTo("1000");
         assertThat((Integer) JsonPath.read(b, "$.lots[1].allocation.purchaserCount")).isZero();
 
-        // expenses: 35 pieces x 2.40 = 84.00 (the typed 9999 is ignored), 35 x 1.91 = 66.85, then typed 100 + 75.50 + 1000
-        assertThat(dec(b, "$.expenses[0].amount")).isEqualByComparingTo("84");
+        // expenses: 35 pieces x 2.5 = 87.50 (the typed 9999 is ignored), 35 x 1.75 = 61.25, then typed 100 + 75.50 + 1000
+        assertThat(dec(b, "$.expenses[0].amount")).isEqualByComparingTo("87.5");
         assertThat(dec(b, "$.expenses[0].quantity")).isEqualByComparingTo("35");
-        assertThat(dec(b, "$.expenses[0].rate")).isEqualByComparingTo("2.4");
-        assertThat(dec(b, "$.expenses[1].amount")).isEqualByComparingTo("66.85");
+        assertThat(dec(b, "$.expenses[0].rate")).isEqualByComparingTo("2.5");
+        assertThat(dec(b, "$.expenses[1].amount")).isEqualByComparingTo("61.25");
         assertThat((Object) JsonPath.read(b, "$.expenses[2].quantity")).as("a typed expense has no quantity or rate").isNull();
-        // totals, worked out by hand: gross 18000 + 22500 = 40500; expenses 84 + 66.85 + 100 + 75.50 + 1000 = 1326.35;
-        // net 40500 - 1326.35 = 39173.65 -> 39174 (whole rupee)
+        // totals, worked out by hand: gross 18000 + 22500 = 40500; expenses 87.5 + 61.25 + 100 + 75.50 + 1000 = 1324.25;
+        // net 40500 - 1324.25 = 39175.75 -> 39176 (whole rupee)
         assertThat((String) JsonPath.read(b, "$.totals.basis")).isEqualTo("CALCULATED");
         assertThat(dec(b, "$.totals.farmerSide.grossOfEnteredLotValues")).isEqualByComparingTo("40500");
-        assertThat(dec(b, "$.totals.farmerSide.totalOfEnteredExpenses")).isEqualByComparingTo("1326.35");
-        assertThat(dec(b, "$.totals.farmerSide.netOfEnteredAmounts")).isEqualByComparingTo("39174");
+        assertThat(dec(b, "$.totals.farmerSide.totalOfEnteredExpenses")).isEqualByComparingTo("1324.25");
+        assertThat(dec(b, "$.totals.farmerSide.netOfEnteredAmounts")).isEqualByComparingTo("39176");
         assertThat((Integer) JsonPath.read(b, "$.totals.farmerSide.lotsWithoutEnteredValue")).isZero();
         // buyer side is its own block: 10800 + 7200 = 18000; commission 540 + 360 = 900; sum 18900; never added to the farmer side
         assertThat(dec(b, "$.totals.buyerSide.enteredValue")).isEqualByComparingTo("18000");
@@ -166,13 +166,13 @@ class BillWorkflowApiIntegrationTest {
         // the bill list carries the farmer-side figures
         String list = body(getJson(mvc, "/api/v1/aadat/bills"));
         assertThat(dec(list, "$.content[0].gross")).isEqualByComparingTo("40500");
-        assertThat(dec(list, "$.content[0].expenses")).isEqualByComparingTo("1326.35");
-        assertThat(dec(list, "$.content[0].net")).isEqualByComparingTo("39174");
+        assertThat(dec(list, "$.content[0].expenses")).isEqualByComparingTo("1324.25");
+        assertThat(dec(list, "$.content[0].net")).isEqualByComparingTo("39176");
 
         // reading it back gives the same figures
         long id = ((Number) JsonPath.read(b, "$.id")).longValue();
         String again = body(getJson(mvc, "/api/v1/aadat/bills/" + id));
-        assertThat(dec(again, "$.totals.farmerSide.netOfEnteredAmounts")).isEqualByComparingTo("39174");
+        assertThat(dec(again, "$.totals.farmerSide.netOfEnteredAmounts")).isEqualByComparingTo("39176");
         assertThat((Integer) JsonPath.read(again, "$.lots[0].purchasers.length()")).isEqualTo(2);
         assertThat((Integer) JsonPath.read(again, "$.billNo")).isEqualTo(1);
         // the history names the bill number
@@ -183,7 +183,7 @@ class BillWorkflowApiIntegrationTest {
     @Test
     void anExpenseHeadRateNeedsItsBasisAndIsOnlyForExpenseHeads() throws Exception {
         String head = body(getJson(mvc, "/api/v1/masters/expense-heads"));
-        assertThat(new BigDecimal(((List<?>) JsonPath.read(head, "$[?(@.id==" + heads[0] + ")].rate")).get(0).toString())).isEqualByComparingTo("2.4");
+        assertThat(new BigDecimal(((List<?>) JsonPath.read(head, "$[?(@.id==" + heads[0] + ")].rate")).get(0).toString())).isEqualByComparingTo("2.5");
         assertThat(((List<?>) JsonPath.read(head, "$[?(@.id==" + heads[0] + ")].rateBasis")).get(0)).isEqualTo("PER_PIECE");
         assertThat(mvc.perform(post("/api/v1/masters/expense-heads").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"Rate Only\",\"rate\":3}")).andReturn().getResponse().getStatus()).as("a rate without a basis").isEqualTo(422);
@@ -201,8 +201,13 @@ class BillWorkflowApiIntegrationTest {
         mvc.perform(put("/api/v1/masters/expense-heads/" + heads[0]).contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"Wf Head 1\",\"rateBasis\":\"PER_PIECE\",\"rate\":9}")).andExpect(status().isOk());
         String again = body(getJson(mvc, "/api/v1/aadat/bills/" + id));
-        assertThat(dec(again, "$.expenses[0].amount")).isEqualByComparingTo("84");
-        assertThat(dec(again, "$.expenses[0].rate")).isEqualByComparingTo("2.4");
+        assertThat(dec(again, "$.expenses[0].amount")).isEqualByComparingTo("87.5");
+        assertThat(dec(again, "$.expenses[0].rate")).isEqualByComparingTo("2.5");
+        // a NEW bill uses the changed configured rate: 35 pieces x 9 = 315, so the expense follows the configuration
+        String changed = text(save(full(), null));
+        assertThat(dec(changed, "$.expenses[0].rate")).isEqualByComparingTo("9");
+        assertThat(dec(changed, "$.expenses[0].amount")).isEqualByComparingTo("315");
+        assertThat(dec(changed, "$.totals.farmerSide.totalOfEnteredExpenses")).as("315 + 61.25 + 100 + 75.50 + 1000").isEqualByComparingTo("1551.75");
     }
 
     @Test

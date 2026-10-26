@@ -9,9 +9,9 @@ import { addExpense, addPurchaser, apiSignIn, authedRequest, chooseLot, fillLot,
 //   rates are entered per 100 kg: 18 a kg is 1800
 //   lot 1 = 1000 kg x 18 = 18000, lot 2 = 1500 kg x 15 = 22500, gross 40500 (35 pieces)
 //   purchasers: 600 kg x 18 = 10800 (commission 5% = 540) and 400 kg x 18 = 7200 (commission 360)
-//   expenses: 35 x 2.40 = 84.00, 35 x 1.91 = 66.85, typed 100 + 75.50, and the Motor Bhada of the bill details (1000), added
-//   automatically = 1326.35
-//   net = 40500 - 1326.35 = 39173.65 -> 39174
+//   expenses: 35 x 2.50 = 87.50, 35 x 1.75 = 61.25, typed 100 + 75.50, and the Motor Bhada of the bill details (1000), added
+//   automatically = 1324.25
+//   net = 40500 - 1324.25 = 39175.75 -> 39176
 
 const API = "/api/v1";
 const sfx = String(Date.now()).slice(-7);
@@ -32,8 +32,8 @@ test.describe.serial("MVP demonstration journey", () => {
     const villageId = villages[0].id as number;
     farmerId = (await (await request.post(`${API}/masters/farmers`, { data: { name: farmerName, nameHi: `एमवीपी किसान ${sfx}`, villageId } })).json()).id;
     for (const b of [buyerOne, buyerTwo]) expect((await request.post(`${API}/masters/buyers`, { data: { name: b } })).ok()).toBeTruthy();
-    // heads 1 and 2 carry the owner-confirmed real per-piece rates 2.4 and 1.91 (BR-014: which head each belongs to is not recorded; fixture names are generic), the others are typed on the bill
-    const rates: Record<number, number> = { 0: 2.4, 1: 1.91 };
+    // heads 1 and 2 carry synthetic per-piece rates 2.5 and 1.75 configured by this test (fixture names are generic), the others are typed on the bill
+    const rates: Record<number, number> = { 0: 2.5, 1: 1.75 };
     for (const [i, h] of heads.entries()) {
       const data = rates[i] !== undefined ? { name: h, rateBasis: "PER_PIECE", rate: rates[i] } : { name: h };
       expect((await request.post(`${API}/masters/expense-heads`, { data })).ok()).toBeTruthy();
@@ -92,9 +92,9 @@ test.describe.serial("MVP demonstration journey", () => {
     // expenses: two calculated from the pieces (35), two typed, and the Motor Bhada of the details, added without pressing anything
     await addExpense(page, heads[0]);
     await addExpense(page, heads[1]);
-    await expect(page.getByTestId("expense-amount-calc").nth(0)).toHaveText("84");       // 35 x 2.4
-    await expect(page.getByTestId("expense-amount-calc").nth(1)).toHaveText("66.85");    // 35 x 1.91
-    await expect(page.getByTestId("expense-rate").nth(0)).toHaveText("2.4");
+    await expect(page.getByTestId("expense-amount-calc").nth(0)).toHaveText("87.5");     // 35 x 2.5
+    await expect(page.getByTestId("expense-amount-calc").nth(1)).toHaveText("61.25");    // 35 x 1.75
+    await expect(page.getByTestId("expense-rate").nth(0)).toHaveText("2.5");
     await addExpense(page, heads[2], "100");
     await addExpense(page, heads[3], "75.50");
     await expect(page.getByTestId("add-bhada-expense")).toHaveCount(0);                   // there is no button: the row is there on its own
@@ -117,8 +117,8 @@ test.describe.serial("MVP demonstration journey", () => {
     // live totals bar and review: farmer side and buyer side apart
     const summary = page.getByTestId("bill-summary");
     await expect(summary.getByTestId("total-gross")).toHaveText("40500");               // 18000 + 22500
-    await expect(summary.getByTestId("total-expenses")).toHaveText("1326.35");          // 84 + 66.85 + 100 + 75.50 + 1000
-    await expect(summary.getByTestId("total-net")).toHaveText("39174");                 // 39173.65 to the rupee
+    await expect(summary.getByTestId("total-expenses")).toHaveText("1324.25");          // 87.5 + 61.25 + 100 + 75.50 + 1000
+    await expect(summary.getByTestId("total-net")).toHaveText("39176");                 // 39175.75 to the rupee
     await expect(summary.getByTestId("total-buyer-value")).toHaveText("18000");         // 10800 + 7200
     await expect(summary.getByTestId("total-buyer-commission")).toHaveText("900");      // 540 + 360
     await expect(summary.getByTestId("total-buyer-purchase")).toHaveText("18900");
@@ -152,7 +152,7 @@ test.describe.serial("MVP demonstration journey", () => {
     expect(sql(`select fy_start_year from aadat_bill where id = ${billId}`)).toBe("2026");
     // the server stored its own calculation, rate and quantity of the per-piece expenses included
     expect(sql(`select string_agg(amount::numeric(18,2) || '/' || coalesce(quantity::int::text, '-') || '/' || coalesce(rate::numeric(18,2)::text, '-'), ' ' order by seq) from aadat_expense where bill_id = ${billId}`))
-      .toBe("84.00/35/2.40 66.85/35/1.91 100.00/-/- 75.50/-/- 1000.00/-/-");
+      .toBe("87.50/35/2.50 61.25/35/1.75 100.00/-/- 75.50/-/- 1000.00/-/-");
 
     // the saved bill shows the same figures: the farmer bill, the purchasers folded away
     await expect(page.getByTestId("saved-msg")).toContainText(String(billNo));
@@ -162,8 +162,8 @@ test.describe.serial("MVP demonstration journey", () => {
     await expect(page.getByTestId("view-bhada")).toHaveText("Yes (1000)");
     const totals = page.getByTestId("view-totals");
     await expect(totals.getByTestId("total-gross")).toHaveText("40500");
-    await expect(totals.getByTestId("total-expenses")).toHaveText("1326.35");
-    await expect(totals.getByTestId("total-net")).toHaveText("39174");
+    await expect(totals.getByTestId("total-expenses")).toHaveText("1324.25");
+    await expect(totals.getByTestId("total-net")).toHaveText("39176");
     await expect(page.getByTestId("view-totals-buyer")).toHaveCount(0);               // the buyer side is not in the farmer summary ...
     await page.getByTestId("view-buyer-side").locator("summary").click();
     await expect(page.getByTestId("view-purchaser-row")).toHaveCount(2);
@@ -176,7 +176,7 @@ test.describe.serial("MVP demonstration journey", () => {
     await page.getByTestId("search-bill-no").fill(String(billNo));
     await expect(page.getByTestId("bill-row")).toHaveCount(1);
     await expect(page.getByTestId("bill-no")).toHaveText(String(billNo));
-    await expect(page.getByTestId("bill-net")).toHaveText("39174");
+    await expect(page.getByTestId("bill-net")).toHaveText("39176");
     await page.getByTestId("bill-open").click();
     await page.getByTestId("open-print").click();
 
@@ -198,7 +198,7 @@ test.describe.serial("MVP demonstration journey", () => {
     await expect(page.getByTestId("print-gross")).toHaveText(String(api.totals.farmerSide.grossOfEnteredLotValues));
     await expect(page.getByTestId("print-total-expenses")).toHaveText(String(api.totals.farmerSide.totalOfEnteredExpenses));
     await expect(page.getByTestId("print-net")).toHaveText(String(api.totals.farmerSide.netOfEnteredAmounts));
-    await expect(page.getByTestId("print-net")).toHaveText("39174");
+    await expect(page.getByTestId("print-net")).toHaveText("39176");
     await expect(page.getByTestId("print-sheet")).toContainText("Buyer / commission agent signature");
 
     // printed page: no application chrome; A4 PDF is produced
@@ -215,7 +215,7 @@ test.describe.serial("MVP demonstration journey", () => {
     await expect(page.getByTestId("print-doc-title")).toHaveText("आढ़त बिल");
     await expect(page.getByTestId("print-sheet")).toContainText("क्रेता / कमीशन एजेंट के हस्ताक्षर");
     await expect(page.getByTestId("print-sheet")).toContainText("नेट रकम");
-    await expect(page.getByTestId("print-net")).toHaveText("39174");
+    await expect(page.getByTestId("print-net")).toHaveText("39176");
     const fontLoaded = await page.evaluate(async () => {
       await document.fonts.ready;
       return Array.from(document.fonts).some((ff) => /devanagari/i.test(ff.family) && ff.status === "loaded");
@@ -270,5 +270,25 @@ test.describe.serial("MVP demonstration journey", () => {
     await expect(page.getByTestId("numbering-start")).toHaveCount(0);
     expect((await api.put(`${API}/firm/bill-numbering`, { data: { nextNumber: 5 } })).status()).toBe(409);
     await owner.close();
+  });
+  test("changing a configured head rate changes the calculated expense of the next bill", async ({ page, request }) => {
+    const name = `Mvp Rate Head ${sfx}`;
+    const created = await request.post(`${API}/masters/expense-heads`, { data: { name, rateBasis: "PER_PIECE", rate: 4 } });
+    expect(created.ok()).toBeTruthy();
+    const headId = (await created.json()).id as number;
+
+    // 10 pieces x a configured rate of 4 = 40 (synthetic rate, configured by this test)
+    await page.goto("/bills/new");
+    await fillLot(page, { item: "Onion", pieces: "10", weight: "100", rate: "1000" });
+    await addExpense(page, name);
+    await expect(page.getByTestId("expense-amount-calc").last()).toHaveText("40");
+
+    // the operator changes the rate in the master data; a fresh bill uses the new rate
+    const updated = await request.put(`${API}/masters/expense-heads/${headId}`, { data: { name, rateBasis: "PER_PIECE", rate: 6 } });
+    expect(updated.ok()).toBeTruthy();
+    await page.goto("/bills/new");
+    await fillLot(page, { item: "Onion", pieces: "10", weight: "100", rate: "1000" });
+    await addExpense(page, name);
+    await expect(page.getByTestId("expense-amount-calc").last()).toHaveText("60");
   });
 });
