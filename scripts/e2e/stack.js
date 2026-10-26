@@ -49,6 +49,11 @@ async function waitFor(what, check, tries = 90) {
 }
 
 async function start() {
+  // JDK 21 is required; there is no machine-specific fallback. JAVA_HOME must point to it (an older ambient Java would fail the build)
+  const javaHome = process.env.JAVA_HOME;
+  if (!javaHome || !fs.existsSync(path.join(javaHome, "bin", process.platform === "win32" ? "java.exe" : "java"))) {
+    throw new Error("JAVA_HOME must point to a JDK 21 installation (no bin/java found there); set it for this command, e.g. JAVA_HOME=<path to jdk-21> node scripts/e2e/stack.js start");
+  }
   if (fs.existsSync(STATE)) await stop();
   const adminPw = crypto.randomBytes(12).toString("hex");
   const appPw = crypto.randomBytes(12).toString("hex");
@@ -65,7 +70,6 @@ revoke temporary on database ${DB} from public;`,
   });
 
   // the real application, as built from this repository
-  const javaHome = process.env.JAVA_HOME || "C:/Users/Priyesh55/tools/jdk-21.0.12.1+1";
   const env = { ...process.env, JAVA_HOME: javaHome };
   const mvnw = path.join(ROOT, "backend", process.platform === "win32" ? "mvnw.cmd" : "mvnw");
   const q = (x) => `"${x}"`; // the repository path contains spaces

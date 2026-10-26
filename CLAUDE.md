@@ -1,4 +1,6 @@
-# CLAUDE.md — Mandi Book (repository: Mandi Business App)
+# CLAUDE.md — Mandi Book
+
+This file was written during development in an earlier private repository named "Mandi Business App"; this repository is the hackathon submission snapshot (`docs/PROVENANCE.md`). Statements about "the dev machine", `mandi_demo` or the developer's own JDK describe that original setup, not requirements of this repository.
 
 Browser-based business application for a family mandi (agricultural wholesale) business. First module: **Aadat billing** (English + Hindi). Built with AI assistance throughout; the MVP is the foundation of the long-term product, not a prototype.
 
@@ -14,9 +16,9 @@ Browser-based business application for a family mandi (agricultural wholesale) b
 7. **Security architecture (approved, mandatory).** The **Platform Admin manages owner accounts only**: no access to firms, employees, bills, business activity or credentials, no impersonation, separate authority (own role, schema, session). The business application runs as the **restricted runtime role** `mandi_app`, never the migration-owner role (`mandi`) that Flyway uses. **Authentication and server-side authorization are mandatory before the business API is reachable beyond this machine**; client-side hiding is not security. **Development shortcuts must never become production defaults**: the baseline configuration is production-like and fails closed; database defaults, the synthetic seed, the demonstration calculation and a privileged runtime role exist only under the explicit `dev`/`demo` profiles. No production authentication bypass, demo identity or default credential.
 
 ## Stack and commands
-- Backend: Java 21, Spring Boot 4.1.1, PostgreSQL 16, Flyway, JPA. Port **8081** (8080 is used by another program on the dev machine).
+- Backend: Java 21, Spring Boot 4.1.1, PostgreSQL 16, Flyway, JPA. Port **8081** (8080 was used by another program on the original development machine).
 - Frontend: Next.js 16 (App Router), React 19, TypeScript. **Read `frontend/node_modules/next/dist/docs/` before using Next APIs** — this is not the Next.js of older training data.
-- JDK 21 is required (on the original development machine system Java was 8 and a portable JDK 21 was used). Set `JAVA_HOME` per command; never change system Java.
+- JDK 21 is required. Set `JAVA_HOME` to it per command (an older ambient Java will not build the backend); never change system Java.
 
 ```
 # database (synthetic data only)
@@ -112,4 +114,4 @@ Modular monolith, package-by-feature: `masters` (farmer, buyer, village, item, e
 ## Village-first billing and master dialogs (V12)
 - A farmer belongs to a village (`farmer.village_id`, nullable for older farmers). The bill picks the village first; the farmer list is `GET /masters/farmers/page?villageId=`; changing the village clears only the farmer. The server refuses a bill whose farmer belongs to a different village than the bill's. V12 must not be applied to `mandi_demo` without the owner go-ahead and a verified backup.
 - Masters are added on the bill in dialogs (`MasterDialog`, village, farmer, purchaser) that reuse the masters-page form (`MasterForm`) and API. Dialogs are rendered OUTSIDE the bill `<form>` (a nested form would submit the bill). Cancel, Escape and failures leave the draft untouched.
-- Design tokens are a blue-indigo ramp (`--ind-*`); layout max width 1440 px. Screenshot evidence lives in `docs/evidence/ui-2026-10-25/`.
+- Design tokens are a blue-indigo ramp (`--ind-*`); layout max width 1440 px. Current screenshot evidence lives in `docs/evidence/submission-2026-10-26/`.

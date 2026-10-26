@@ -3,12 +3,12 @@
 ## Prerequisites (verified on the dev machine)
 | Need | Status here | Minimum setup |
 |---|---|---|
-| JDK 21 | Temurin 21.0.12 was used (portable install); on the original machine system Java was 8 and was **not** changed | Set `JAVA_HOME` to a JDK 21 per shell/command |
+| JDK 21 | Required. Temurin 21.0.12 was used. `scripts/e2e/stack.js` refuses to run unless `JAVA_HOME` points to a JDK | Set `JAVA_HOME` to a JDK 21 per shell/command; never change system Java |
 | Maven | Use the wrapper `backend/mvnw` (Maven 3.10.0, downloaded on first run) | none |
 | Node / npm | v24.4.1 / 11.4.2 | Node 20+ |
 | Docker Desktop | v29.7.2; must be **running** | Start Docker Desktop (needed for dev DB and Testcontainers) |
 | Browser for E2E | Installed Google Chrome (Playwright `channel: chrome`) | Or `npx playwright install chromium` |
-| Free ports | **8080 is used by another program** on this machine; backend uses **8081**, frontend 3000, dev DB 5433 | Override with `SERVER_PORT`, `BACKEND_URL` |
+| Free ports | Backend uses **8081** (8080 was taken by another program on the original machine), frontend 3000, dev DB 5433 | Override with `SERVER_PORT`, `BACKEND_URL` |
 
 An existing local PostgreSQL 16 is present and is **not used**.
 
@@ -45,7 +45,7 @@ The recommended local start still loads `.env.local` (restricted `mandi_app` at 
 
 ## Verify
 ```bash
-cd backend && ./mvnw -B verify                       # 22 tests, uses Testcontainers
+cd backend && ./mvnw -B verify                       # 250+ tests (251 at the last full run, `docs/QA_EVIDENCE.md`), uses Testcontainers
 cd frontend && npm test && npx tsc --noEmit && npx eslint && npm run build
 # browser tests: disposable stack, see "Browser tests" below (never the development database)
 docker exec mandi-postgres psql -U mandi -d mandi_demo -c "select * from aadat_bill;"   # independent DB check
