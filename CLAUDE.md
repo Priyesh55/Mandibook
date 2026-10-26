@@ -16,7 +16,7 @@ Browser-based business application for a family mandi (agricultural wholesale) b
 ## Stack and commands
 - Backend: Java 21, Spring Boot 4.1.1, PostgreSQL 16, Flyway, JPA. Port **8081** (8080 is used by another program on the dev machine).
 - Frontend: Next.js 16 (App Router), React 19, TypeScript. **Read `frontend/node_modules/next/dist/docs/` before using Next APIs** — this is not the Next.js of older training data.
-- JDK 21 is installed locally at `C:\Users\Priyesh55\tools\jdk-21.0.12.1+1` (system Java is 8). Set `JAVA_HOME` per command; never change system Java.
+- JDK 21 is required (on the original development machine system Java was 8 and a portable JDK 21 was used). Set `JAVA_HOME` per command; never change system Java.
 
 ```
 # database (synthetic data only)

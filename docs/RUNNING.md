@@ -3,7 +3,7 @@
 ## Prerequisites (verified on the dev machine)
 | Need | Status here | Minimum setup |
 |---|---|---|
-| JDK 21 | Portable Temurin 21.0.12 at `C:\Users\Priyesh55\tools\jdk-21.0.12.1+1`; system Java is 8 and was **not** changed | Set `JAVA_HOME` to a JDK 21 per shell/command |
+| JDK 21 | Temurin 21.0.12 was used (portable install); on the original machine system Java was 8 and was **not** changed | Set `JAVA_HOME` to a JDK 21 per shell/command |
 | Maven | Use the wrapper `backend/mvnw` (Maven 3.10.0, downloaded on first run) | none |
 | Node / npm | v24.4.1 / 11.4.2 | Node 20+ |
 | Docker Desktop | v29.7.2; must be **running** | Start Docker Desktop (needed for dev DB and Testcontainers) |
@@ -16,7 +16,7 @@ An existing local PostgreSQL 16 is present and is **not used**.
 ```bash
 docker compose up -d                       # PostgreSQL 16 on 127.0.0.1:5433 (loopback only), database mandi_demo
 cd backend
-export JAVA_HOME="C:/Users/Priyesh55/tools/jdk-21.0.12.1+1"; export PATH="$JAVA_HOME/bin:$PATH"
+export JAVA_HOME="<path to your JDK 21>"; export PATH="$JAVA_HOME/bin:$PATH"
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=demo     # 127.0.0.1:8081, seeds synthetic data, enables opt-in demo calc
 cd ../frontend && npm install && npm run build && npm run start   # 127.0.0.1:3000 (loopback only)
 ```
