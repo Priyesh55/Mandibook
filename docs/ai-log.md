@@ -51,3 +51,11 @@ An honest record of what AI did on Mandi Book, what failed, and what humans deci
 - Browser coverage is Chrome through Playwright; other browsers and screen readers are untested.
 - No load or concurrency testing beyond the integration tests.
 - Accounting rules beyond `business-rules.md` are unconfirmed and unimplemented.
+
+## Hackathon submission preparation (2026-10-26)
+| Step | AI contribution | Result and problems |
+|---|---|---|
+| Audit and snapshot | Read-only audit of the original repository (history, 109 untracked files, ignored files); copied the working tree, with exclusions, into a new repository | The original repository was not modified. The original history was deliberately not carried over: `docs/PROVENANCE.md` |
+| Disclosure | Wrote the provenance and history-boundary note and third-party notices | The older-program investigation details come from the owner's provenance review; the agent could not verify them from the repository, and one statement in the original history ("not decompiled") conflicts with that review |
+| Fresh verification | Re-ran backend verify, frontend checks and the full browser suite on a second disposable stack beside the running original stack | Results in `docs/QA_EVIDENCE.md`. A fresh-tree `tsc` failure (generated type) was explained, not hidden |
+| Agent mistakes | Two commands were blocked by the project hook (they named a protected folder or discarded changes); the agent switched to an allow-list copy and an edit | No protected data was read |
