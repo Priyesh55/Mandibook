@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guards:
+    name: Guards and secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Guard and scanner tests
+        run: node --test .claude/hooks/guard.test.js scripts/dev/secret-scan.test.js
+      - name: Secret scan (tracked files; prints file:line only)
+        run: node scripts/dev/secret-scan.js
+
+  backend:
+    name: Backend (JDK 21, Maven verify)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - name: Verify (unit and integration tests on Testcontainers PostgreSQL)
+        working-directory: backend
+        run: sh ./mvnw -B verify
+
+  frontend:
+    name: Frontend (tests, types, lint, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: Unit tests
+        run: npm test
+      - name: TypeScript
+        run: npx tsc --noEmit
+      - name: ESLint
+        run: npx eslint
+      - name: Production build
+        run: npm run build
+
+# Browser tests (Playwright) need the disposable stack of scripts/e2e/stack.js (Docker, a built backend and a browser)
+# and are run locally; see docs/RUNNING.md. No job uses real credentials, a production service or mandi_demo.

@@ -1,0 +1,36 @@
+# build outputs
+**/target/
+**/node_modules/
+**/.next/
+**/.next-e2e*/
+**/out/
+**/test-results*/
+**/playwright-report*/
+# local config / secrets
+.env
+.env.*
+!.env.example
+*.log
+# IDE
+.idea/
+.vscode/
+# NEVER commit database files, executables or debug symbols
+*.mdf
+*.ldf
+*.bak
+*.exe
+*.pdb
+
+# database backups (synthetic dev data only)
+backups/
+*.dump
+
+# synthetic accounts of the disposable browser-test stack
+**/e2e/.fixtures.json
+
+# local-only AI files (never commit)
+CLAUDE.local.md
+.claude/settings.local.json
+
+# local audit scratch reports (never part of a submission)
+ai-audit/

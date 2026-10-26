@@ -1,0 +1,22 @@
+# Local development database. Synthetic data only. Credentials are dev-only and non-sensitive.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mandi-postgres
+    environment:
+      POSTGRES_DB: mandi_demo
+      POSTGRES_USER: mandi
+      POSTGRES_PASSWORD: mandi_dev_only
+    ports:
+      # Published on loopback ONLY. 5433 avoids clashing with any locally installed PostgreSQL. A deliberate wider
+      # binding needs MANDI_DB_BIND set explicitly (docs/RUNNING.md, "Deliberate non-local deployment").
+      - "${MANDI_DB_BIND:-127.0.0.1}:5433:5432"
+    volumes:
+      - mandi_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mandi -d mandi_demo"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+volumes:
+  mandi_pgdata:
