@@ -1,0 +1,11 @@
+Final verification run, 2026-10-30, on the tree committed as 124a1c5a0d0475f1cb7b6039685f51c6f02076b3 ("Finalize MandiBook hackathon submission"; parent b057a7b).
+Code fingerprint of the tested tree: files=294 sha256=891088c4ed5eff29bc7475962b65feb03b19e00fe82e842383b92bfa39f943dd (identical before the runs, at the start and at the end of the browser run, and in the committed tree; method: docs/QA_EVIDENCE.md section 1c).
+Environment: Windows 11, JDK 21.0.7, Node 24.4.1, Docker. The already running servers and databases (ports 3000, 3100, 8081, 8091, 5433, 55434) were not touched; the browser run used its own database container (mandi-e2e-pg-c, port 55456), backend (8098) and web server (3108), all removed afterwards.
+
+Backend: ./mvnw -B verify in a "git archive" copy of backend/ (backend tree object 4dbc5ddbace3708ef9ab9c7d985739a3aa54ca08, identical to the committed backend): Tests run: 251, Failures: 0, Errors: 0, Skipped: 0; BUILD SUCCESS; total time 05:33 min; jar 60,285,001 bytes. Exit 0.
+Frontend: npm test (node --test): tests 53, pass 53, fail 0, skipped 0. tsc --noEmit: exit 0. eslint: exit 0. npm run build (NEXT_DIST_DIR=.next-e2e-b): exit 0.
+Playwright E2E (Chrome): 99 passed (7.0 min), 0 failed, exit 0. The 99 tests are the same suite as the 99 listed in e2e-summary.txt.
+Guard hook, secret scanner and stack shutdown tests (node --test): tests 65, pass 65, fail 0, cancelled 0, skipped 0.
+Secret scan (node scripts/dev/secret-scan.js): exit 0, "no likely secrets found (10 verified test constant(s) suppressed by scripts/dev/secret-scan-allowlist.json)"; the ten suppressions were approved by the owner on 30 October 2026 (known limitation: only the first credential-like text of a line is examined). Staged scan before the commit: exit 0.
+git diff --check: exit 0. git diff --cached --check: exit 0 (line-ending notices about CRLF in five frontend files are warnings, not errors).
+Not run: CI (needs a Git host), physical printer output, other browsers, load tests.
