@@ -25,7 +25,7 @@ function Frame({ children }: { children: ReactNode }) {
       <div className={signedIn ? "shell-main with-sidebar" : "shell-main"}>
         <Header mobileOpen={mobileOpen} onMobileToggle={() => setMobile({ path, open: !mobileOpen })} />
         <main className="container">
-          <Breadcrumbs />
+          {signedIn && <Breadcrumbs />}
           <AuthGate>{children}</AuthGate>
         </main>
       </div>

@@ -16,8 +16,7 @@ Browser-based business application for a family mandi (agricultural wholesale) b
 7. **Security architecture (approved, mandatory).** The **Platform Admin manages owner accounts only**: no access to firms, employees, bills, business activity or credentials, no impersonation, separate authority (own role, schema, session). The business application runs as the **restricted runtime role** `mandi_app`, never the migration-owner role (`mandi`) that Flyway uses. **Authentication and server-side authorization are mandatory before the business API is reachable beyond this machine**; client-side hiding is not security. **Development shortcuts must never become production defaults**: the baseline configuration is production-like and fails closed; database defaults, the synthetic seed, the demonstration calculation and a privileged runtime role exist only under the explicit `dev`/`demo` profiles. No production authentication bypass, demo identity or default credential.
 
 ## Stack and commands
-- Backend: Java 21, Spring Boot 4.1.1, PostgreSQL 16, Flyway, JPA. Port **8081** (8080 was used by another program on the original development machine).
-- Frontend: Next.js 16 (App Router), React 19, TypeScript. **Read `frontend/node_modules/next/dist/docs/` before using Next APIs** — this is not the Next.js of older training data.
+- Backend port is **8081** (8080 was used by another program on the original development machine).
 - JDK 21 is required. Set `JAVA_HOME` to it per command (an older ambient Java will not build the backend); never change system Java.
 
 ```
@@ -38,9 +37,6 @@ cd frontend && npm test && npx tsc --noEmit && npx eslint && npm run build
 ```
 More: `docs/RUNNING.md`.
 
-## UI
-White-and-blue theme from CSS tokens in `frontend/src/app/globals.css` (see `docs/UI_GUIDE.md`); `src/lib/theme.test.ts` enforces WCAG AA contrast. Status colours only for status. Lot/expense grids are keyboard-driven (Enter / Shift+Enter). The printed bill is a **draft** layout (`docs/business-rules.md` BR-107).
-
 ## Database and audit rules
 - Schema changes are versioned Flyway migrations in `db/migration` only. **Never put a versioned migration in `db/seed`**: the demo seed is the repeatable, idempotent `R__synthetic_demo_data.sql` (a versioned seed once blocked later schema migrations). Demo profile allows out-of-order; other profiles do not.
 - `spring.flyway.ignore-migration-patterns` is set in `application-dev.properties` only, and must keep **both** `*:missing` and `*:future` there (setting only one silently drops Flyway's default and broke startup once). Production keeps Flyway's own checks.
@@ -56,7 +52,6 @@ White-and-blue theme from CSS tokens in `frontend/src/app/globals.css` (see `doc
 - **Firm context (P1-05):** `CurrentFirm` is `RequestFirmContext`: the firm comes only from the signed-in session and `FirmContextFilter` verifies, on EVERY `/api/**` request outside `/api/v1/auth/`, an ACTIVE membership, an active firm and the owner's account state (`public.account_access`; no account = blocked). Answers: 409 `FIRM_SELECTION_REQUIRED` (several firms, none chosen; one firm is chosen automatically), 409 `FIRM_CHECK_REQUIRED`/`FIRM_MISMATCH` (the `X-Mandi-Firm-Check` header must name the session's active firm, so a stale tab cannot write elsewhere), 403 `NO_MEMBERSHIP`/`FIRM_INACTIVE`/`ACCOUNT_BLOCKED`, 401. There is no ambient firm: outside a verified request `CurrentFirm.id()` throws. A new business route needs no check of its own; `FirmContextIsolationIntegrationTest` enumerates all routes. Remaining: no per-role permission policy yet (OWNER and EMPLOYEE have the same rights), repositories still extend `JpaRepository`, audit actor is still `anonymous` (P1-09), and there is no way to provision users yet.
 
 ## Sign-in, firms and provisioning (P1-07)
-- Frontend: `SessionProvider`/`AuthGate` (src/lib/session.tsx, components/AuthGate.tsx) mirror the SERVER session in memory only; no password, id or token is stored by the page. `lib/api.ts` adds the CSRF token (cookie, retried once after `CSRF_REJECTED`) and `X-Mandi-Firm-Check` (the firm of the ready state) and tells the session layer about 401 / stale firm / no access. The page under an expired session stays mounted (inert) beneath a sign-in dialog; the app is re-created when the firm changes.
 - People enter ONLY by invitation: `OnboardingService` (employee invitation by an OWNER of the active firm; owner invitation created in schema platform by the DB owner or the future console, accepted through the SECURITY DEFINER functions of V9; firm creation only for a person with an allowing owner account). No endpoint sets, shows or resets a password or token. Invitation links need the mail port: without a provider (`mandi.mail.dev-sink` false) the API answers 503 and stores nothing; the sink is dev/test only and refused elsewhere at start-up.
 - `scripts/dev/provision-owner.js` is the development runbook (DB-owner credential, writes only to `platform`, refuses in production). `scripts/e2e/stack.js` builds the disposable browser-test stack.
 
@@ -79,7 +74,7 @@ White-and-blue theme from CSS tokens in `frontend/src/app/globals.css` (see `doc
 - The VS Code Java extension (Eclipse compiler) can overwrite files in `backend/target`. If a test class fails with "Unresolved compilation problems", delete that class from `target/test-classes` and rebuild.
 
 ## Architecture
-Modular monolith, package-by-feature: `masters` (farmer, buyer, village, item, expense head), `billing.aadat` (bill, lots, expenses, `calc`), `shared` (errors, paging). Modules must not reach into each other's persistence; talk through services. REST under `/api/v1`, localized errors via `Accept-Language: en|hi`. UI strings live in `frontend/src/lib/dictionary.ts` (both languages required; a unit test enforces key parity).
+Modular monolith, package-by-feature. Modules must not reach into each other's persistence; talk through services. REST under `/api/v1`, localized errors via `Accept-Language: en|hi`. UI strings live in `frontend/src/lib/dictionary.ts` (both languages required; a unit test enforces key parity).
 
 ## AI workflow controls
 - `.claude/settings.json`: permission rules (deny force-push, hard resets, `git clean`, `--no-verify`, destructive Docker and `rm -rf`, reads of `.env*` and `backups/`; ask for push, commit, Docker, migrations and agent config) and the PreToolUse hook `.claude/hooks/guard.js` (tests: `node --test .claude/hooks/guard.test.js`). Never edit these to make a task easier.
@@ -94,13 +89,9 @@ Modular monolith, package-by-feature: `masters` (farmer, buyer, village, item, e
 - Record AI contributions and failures honestly in `docs/ai-log.md`; keep evidence in `docs/evidence/` and `docs/QA_EVIDENCE.md`.
 - Commit messages end with the co-author trailer. Prefer new commits over amends.
 
-## Where things are
-`docs/ARCHITECTURE.md` · `docs/business-rules.md` · `docs/ASSUMPTIONS.md` · `docs/UNRESOLVED.md` · `docs/RUNNING.md` · `docs/AI_POLICY.md` · `docs/QA_EVIDENCE.md` · `docs/ai-log.md`
-
 ## Bill saves, audit actors and pickers (V10)
 - `POST /api/v1/aadat/bills` accepts `Idempotency-Key` (8-64 chars `[A-Za-z0-9_-]`): same key + same content replays the saved bill (200, `Idempotent-Replay: true`), different content is 409. The bill form keeps one key per form.
 - Audit events record `actor_user_id`, `actor_membership_id`, `actor_role`, `request_id` from the server-side request context only; events from before V10 stay anonymous (no backfill). Migrations V10 must not be applied to `mandi_demo` without the owner's go-ahead.
-- Farmer, village and buyer selection use `MasterPicker` (paged search); in Playwright use `pickMaster()` from `e2e/support.ts`.
 
 ## Bill workflow (V11): numbers, purchasers, entered totals
 - **V11 must not be applied to `mandi_demo`** without the owner go-ahead and a verified backup (see `/new-migration`). Demonstrate on a fresh Flyway-built database or the disposable stack. Run `scripts/e2e/stack.js` with `JAVA_HOME` set to JDK 21 (the ambient JAVA_HOME is Java 8).
@@ -109,9 +100,6 @@ Modular monolith, package-by-feature: `masters` (farmer, buyer, village, item, e
 - **Motor Bhada.** The bhada paid in the bill details is an expense of the head named Motor Bhada, added to the bill automatically (no button); a firm without that head cannot save a bill with bhada, and the message says to add it.
 - **Farmer bill and buyer side.** The saved bill, its print and the bill list show the FARMER side only (gross, expenses, net); the financial year is not shown on a bill (its date is). Purchasers and the 5% commission charged to them are entered on the bill and shown in a folded "buyer side" block of the view, never on the print. Farmer side and buyer side are never added together; print and view show the server figures and calculate nothing.
 - Firm print profile (`address`, `phone`, `licence_no`, `shop_no`): column-level UPDATE grant for the runtime role, owner-only endpoint `/api/v1/firm/profile`.
-- Frontend: one draft state in `components/BillForm.tsx` feeds the four sections in `components/bill/`; indigo tokens in `globals.css` (`--ind-*`); browser helpers in `e2e/support.ts` (`fillLot`, `addPurchaser`, `addExpense`, `chooseLot`).
 
 ## Village-first billing and master dialogs (V12)
 - A farmer belongs to a village (`farmer.village_id`, nullable for older farmers). The bill picks the village first; the farmer list is `GET /masters/farmers/page?villageId=`; changing the village clears only the farmer. The server refuses a bill whose farmer belongs to a different village than the bill's. V12 must not be applied to `mandi_demo` without the owner go-ahead and a verified backup.
-- Masters are added on the bill in dialogs (`MasterDialog`, village, farmer, purchaser) that reuse the masters-page form (`MasterForm`) and API. Dialogs are rendered OUTSIDE the bill `<form>` (a nested form would submit the bill). Cancel, Escape and failures leave the draft untouched.
-- Design tokens are a blue-indigo ramp (`--ind-*`); layout max width 1440 px. Current screenshot evidence lives in `docs/evidence/submission-2026-10-26/`.

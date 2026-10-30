@@ -1,4 +1,6 @@
-# Curated browser evidence (2026-10-26)
+# Curated browser evidence (2026-10-26): HISTORICAL, commit `b057a7b`
+
+> **Superseded; not the current interface.** These images record commit `b057a7b` as it was on 2026-10-26. Images 03 and 10 were opened on 2026-10-30 and show the **"Classic desk" bill layout with a "LAYOUT 1 2 3 4 5 6" switcher**; the other bill-entry images (01, 02, 04 and 11) come from the same journey and are presumed to show the same. The desktop images also show a menu rail that still had the "Layouts" group icon (confirmed on image 03). That layout, the switcher and the group have since been removed: the lot cards layout is the only bill layout. The current screenshot set is `docs/evidence/submission-2026-10-30/`. This folder is kept unchanged as historical verification evidence and must not be presented as the final interface.
 
 Screenshots of the Mandi Book bill journey, taken by `frontend/e2e/evidence-screenshots.spec.ts` in a real browser (Chrome through Playwright) against a disposable stack: its own new PostgreSQL container, the real backend and a production build of the web application. All names, firms and numbers are synthetic ("E2E Firm A …", "Ev Farmer …", "Demo …"). Each image was opened and checked by eye; only images that are complete and unclipped are listed. Figures can be verified by hand: gross 18000 + 22500 = 40500, expenses 70 + 100 + 1000 = 1170, net 39330.
 

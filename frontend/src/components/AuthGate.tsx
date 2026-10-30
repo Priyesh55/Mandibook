@@ -42,7 +42,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
           <>
             <div key={lastFirmId ?? 0} inert aria-hidden="true" data-testid="content-inert">{children}</div>
             <div className="overlay" role="dialog" aria-modal="true" aria-label={t("auth.sessionExpiredTitle")} data-testid="relogin-dialog">
-              <LoginForm expired />
+              <LoginForm expired overlay />
             </div>
           </>
         );

@@ -11,6 +11,7 @@ const eslintConfig = defineConfig([
     ".next/**",
     // Generated output (isolated browser-test build, reports, screenshots):
     ".next-e2e*/**",
+    ".next-dev/**",
     "playwright-report*/**",
     "test-results*/**",
     "out/**",

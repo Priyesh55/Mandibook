@@ -1,0 +1,37 @@
+Backend: ./mvnw -B verify, JDK 21.0.7 (Microsoft build), Docker, Testcontainers, run 2026-10-30.
+Tested tree: a copy of backend/ made with 'git archive HEAD backend' (HEAD b057a7b, backend tree object 4dbc5ddbace3708ef9ab9c7d985739a3aa54ca08). The working tree has no modified or untracked file under backend/, so the copy is the current backend. A copy was used because the running browser-test stacks hold the jar in backend/target.
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 53.45 s -- in com.mandi.billing.aadat.AadatApiIntegrationTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.076 s -- in com.mandi.billing.aadat.AadatCalculationServiceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.11 s -- in com.mandi.billing.aadat.AuditAtomicityIntegrationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.261 s -- in com.mandi.billing.aadat.AuditIntegrationTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.046 s -- in com.mandi.billing.aadat.BillCalculatorTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.754 s -- in com.mandi.billing.aadat.BillIdempotencyIntegrationTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.94 s -- in com.mandi.billing.aadat.BillWorkflowApiIntegrationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.35 s -- in com.mandi.billing.aadat.BillWorkflowMigrationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.537 s -- in com.mandi.billing.aadat.DemoModeIntegrationTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.157 s -- in com.mandi.billing.aadat.FarmerVillageApiIntegrationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.128 s -- in com.mandi.billing.aadat.FarmerVillageMigrationTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.17 s -- in com.mandi.billing.aadat.QueryShapeIntegrationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.039 s -- in com.mandi.db.FlywayConcurrentIndexConfigTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.26 s -- in com.mandi.db.IndexMigrationTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.731 s -- in com.mandi.firm.FirmIsolationIntegrationTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.58 s -- in com.mandi.firm.FirmMigrationTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.48 s -- in com.mandi.firm.RuntimePrivilegesIntegrationTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 52.28 s -- in com.mandi.identity.IdentityMigrationTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.287 s -- in com.mandi.identity.IdentityPersistenceIntegrationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.037 s -- in com.mandi.identity.OneTimeTokensAndEmailTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.206 s -- in com.mandi.identity.PasswordServiceTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 42.77 s -- in com.mandi.identity.PlatformBoundaryIntegrationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.095 s -- in com.mandi.MandiBackendApplicationTests
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.643 s -- in com.mandi.security.AuditActorMigrationTest
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 21.76 s -- in com.mandi.security.AuthenticationFlowIntegrationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.24 s -- in com.mandi.security.AuthenticationMigrationTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.97 s -- in com.mandi.security.FirmContextIsolationIntegrationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.066 s -- in com.mandi.security.OnboardingGuardsIntegrationTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.07 s -- in com.mandi.security.OnboardingIntegrationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.258 s -- in com.mandi.security.ProductionLikeCookieIntegrationTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.509 s -- in com.mandi.shared.StartupSafetyTest
+[INFO] Tests run: 251, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  07:18 min
+mvn exit=0

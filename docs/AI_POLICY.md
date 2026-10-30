@@ -1,6 +1,6 @@
 # AI Policy for Mandi Book Development
 
-Scope: how AI coding agents (currently Claude Code) are used on this repository. It describes what the repository enforces and what remains the project owner's responsibility. It is a working policy for this project, not an organisational or legal approval.
+Scope: how AI coding agents (currently Claude Code) are used on this repository. ChatGPT also supported planning, architecture discussions, prompt preparation and technical review (confirmed accurate by the owner on 30 October 2026); it is not configured as an agent of this repository (no skill, hook or permission rule refers to it), and none of its output is recorded here (`docs/PROVENANCE.md` section 4). It describes what the repository enforces and what remains the project owner's responsibility. It is a working policy for this project, not an organisational or legal approval.
 
 ## 1. Workflow
 Plan, write the test for a rule first, implement in small steps, run the checks, get an independent read-only review, fix, record. Tools in the repository:
@@ -29,7 +29,7 @@ A change is not done until the check ladder in `CLAUDE.md` has been run and the 
 `docs/ai-log.md` records what AI did, what failed and what humans decided. `docs/QA_EVIDENCE.md` records commands and results. Screenshots live in `docs/evidence/` and use synthetic data.
 
 ## 7. Provenance, licensing and intellectual property
-Every part of the product is written for Mandi Book from its own requirements (`docs/business-rules.md`). Do not paste proprietary or third-party source or documentation into the repository, prompts or tests; use only synthetic examples and rules the owner has stated. Third-party libraries keep their own licences, and dependencies suggested by an agent must be verified by a human before they are added. The repository does not make a legal determination about the ownership or licensing of AI-generated code; that is for the project owner to decide.
+The product is written for Mandi Book from its own requirements (`docs/business-rules.md`); some concepts may have been informed by an older program the team investigated, and provenance has not been independently established (`docs/PROVENANCE.md` section 2). Do not paste proprietary or third-party source or documentation into the repository, prompts or tests; use only synthetic examples and rules the owner has stated. Third-party libraries keep their own licences, and dependencies suggested by an agent must be verified by a human before they are added. The repository does not make a legal determination about the ownership or licensing of AI-generated code; that is for the project owner to decide.
 
 ## 8. Attribution
 Commits made with AI assistance end with the co-author trailer. Authorship trailers are never edited to change how the project looks.

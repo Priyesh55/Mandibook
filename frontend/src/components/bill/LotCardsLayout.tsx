@@ -2,16 +2,15 @@
 
 import { allocationNotes } from "@/lib/billDraft";
 import { fill } from "@/lib/text";
-import { BillChecks, BillTotalsBar } from "../BillSidebar";
-import { DeskAlerts, DeskHeader, DetailsPanel, ExpensesPanel, itemNameOf, LotFields, PartiesPanel } from "../DeskParts";
-import type { LayoutInfo } from "../layouts";
-import type { Desk } from "../useBillDesk";
+import { BillChecks, BillTotalsBar } from "./BillSidebar";
+import { DeskAlerts, DeskHeader, DetailsPanel, ExpensesPanel, itemNameOf, LotFields, PartiesPanel } from "./DeskParts";
+import type { Desk } from "./useBillDesk";
 
-/** Every lot as a card with its own parties inside. Used by layouts 2, 3 and 6. */
-export function LotCardsList({ desk, density = "normal" }: { desk: Desk; density?: "normal" | "big" | "compact" }) {
+/** Every lot as a card with its own parties inside, so every lot and every party is visible at once. */
+function LotCardsList({ desk }: { desk: Desk }) {
   const { t } = desk;
   return (
-    <div className={`lotcards ${density}`}>
+    <div className="lotcards" data-testid="section-lots">
       {desk.draft.lots.map((l, idx) => {
         const current = idx === desk.selectedIndex;
         const warn = allocationNotes(l).length > 0;
@@ -40,11 +39,11 @@ export function LotCardsList({ desk, density = "normal" }: { desk: Desk; density
   );
 }
 
-/** Layout 2: the classic frame (details strip, expenses on the right, totals bar), but the middle section is a stack of lot cards, each with its parties inside, so every lot and every party is visible at once. */
-export function LayoutLotCards({ desk, layout }: { desk: Desk; layout: LayoutInfo }) {
+/** The bill entry: the details strip, the lot cards, the expenses on the right and the totals bar. */
+export function LotCardsLayout({ desk }: { desk: Desk }) {
   return (
     <>
-      <DeskHeader desk={desk} layout={layout} />
+      <DeskHeader desk={desk} />
       <DeskAlerts desk={desk} />
       <DetailsPanel desk={desk} variant="strip" />
       <div className="desk2">

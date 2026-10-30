@@ -1,0 +1,5 @@
+Frontend, run 2026-10-30 on the working tree with code fingerprint a84637de4bfd747df647f5be50c34ca3eb652dce7bd4f0b3fd696f5b1cb82f25 (294 files; see docs/QA_EVIDENCE.md section 1c).
+npm test (node --test): exit 0, tests 53, pass 53, fail 0, skipped 0
+tsc --noEmit: exit 0
+eslint: exit 0
+npm run build (NEXT_DIST_DIR=.next-e2e-b): exit 0, routes: / /_not-found /accept-invitation /bills/[id] /bills/[id]/print /bills/new /masters/[type] /settings/firm /team

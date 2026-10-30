@@ -1,0 +1,7 @@
+Guard hook, secret scanner and E2E stack-shutdown tests, run 2026-10-30 on code fingerprint a84637de4bfd747df647f5be50c34ca3eb652dce7bd4f0b3fd696f5b1cb82f25:
+node --test .claude/hooks/guard.test.js scripts/dev/secret-scan.test.js scripts/e2e/stack.test.js: exit 0, tests 65, pass 65, fail 0, cancelled 0, skipped 0 (34 guard + 5 scanner + 26 shutdown)
+
+node scripts/dev/secret-scan.js (tracked files), before the allow-list: exit 1, 10 findings, listed in docs/QA_EVIDENCE.md section 1d (values never printed):
+node scripts/dev/secret-scan.js, with scripts/dev/secret-scan-allowlist.json:
+secret-scan: no likely secrets found (10 verified test constant(s) suppressed by scripts/dev/secret-scan-allowlist.json)
+exit 0

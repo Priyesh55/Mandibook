@@ -79,14 +79,6 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    // TEMPORARY: the layouts of the bill entry that are being compared (remove with src/components/bill/layouts when one is chosen)
-    id: "layouts",
-    labelKey: "nav.group.layouts",
-    items: [1, 2, 3, 4, 5, 6].map((n) => ({
-      id: `layout-${n}`, labelKey: `nav.layout.${n}` as MessageKey, status: "available" as const, href: `/bills/new?layout=${n}`, isCurrent: () => false,
-    })),
-  },
-  {
     id: "firm-year",
     labelKey: "nav.group.firmYear",
     items: [

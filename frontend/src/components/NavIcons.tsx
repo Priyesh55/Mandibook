@@ -41,14 +41,6 @@ const PATHS: Record<string, React.ReactNode> = {
       <path d="M9 21v-6h6v6" />
     </>
   ),
-  layouts: (
-    <>
-      <rect x="3" y="3" width="8" height="8" rx="1.5" />
-      <rect x="13" y="3" width="8" height="8" rx="1.5" />
-      <rect x="3" y="13" width="8" height="8" rx="1.5" />
-      <rect x="13" y="13" width="8" height="8" rx="1.5" />
-    </>
-  ),
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   close: <path d="M6 6l12 12M18 6L6 18" />,
 };

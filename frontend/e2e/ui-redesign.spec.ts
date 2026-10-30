@@ -137,7 +137,8 @@ test.describe("theme and accessibility", () => {
     await expect(current).toHaveAttribute("aria-current", "true");
     expect(await current.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe("rgb(31, 79, 207)");   // the number of the current lot is filled
     expect(await current.evaluate((el) => getComputedStyle(el).color)).toBe("rgb(255, 255, 255)");
-    expect(await lotRow(page, 1).locator("td").first().evaluate((el) => getComputedStyle(el).backgroundColor)).toBe("rgb(239, 244, 253)");   // and its row is tinted
+    expect(await lotRow(page, 1).evaluate((el) => getComputedStyle(el).borderLeftColor)).toBe("rgb(31, 79, 207)");   // and its card has the indigo left border (--ind-700)
+    expect(await lotRow(page, 0).evaluate((el) => getComputedStyle(el).borderLeftColor)).not.toBe("rgb(31, 79, 207)");   // the other lot does not
     await page.screenshot({ path: "test-results/ui-bill-form.png", fullPage: true });
   });
 

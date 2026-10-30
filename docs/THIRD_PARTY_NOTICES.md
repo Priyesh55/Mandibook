@@ -1,6 +1,6 @@
 # Third-party dependencies
 
-No third-party source is copied into this repository. The projects below are used as declared dependencies (`backend/pom.xml`, `frontend/package.json`, `frontend/package-lock.json`) and keep their own licences. The licence names are from general knowledge of these projects and **have not been machine-verified**: run a licence scanner (for example `license-checker` for npm, the Maven `license` plugin for Java) before redistribution, and include the notice files those licences require. `npm audit` reported 0 known vulnerabilities on 2026-10-26 (`npm ci` output).
+We know of no third-party library source copied into this repository (this has not been checked with a scanner, and provenance of concepts from an older program is a separate, unestablished question: `docs/PROVENANCE.md` section 2). The projects below are used as declared dependencies (`backend/pom.xml`, `frontend/package.json`, `frontend/package-lock.json`) and keep their own licences. The licence names are from general knowledge of these projects and **have not been machine-verified**: run a licence scanner (for example `license-checker` for npm, the Maven `license` plugin for Java) before redistribution, and include the notice files those licences require. `npm audit` reported 0 known vulnerabilities on 2026-10-26 (`npm ci` output).
 
 | Component | Use | Licence (believed) |
 |---|---|---|

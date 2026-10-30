@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { allocationNotes, lotValue, purchaserCommission, purchaserTotal, purchaserValue } from "@/lib/billDraft";
 import { formatScaled, parseScaled, sumScaled } from "@/lib/decimal";
@@ -12,32 +11,12 @@ import { MasterPicker } from "../MasterPicker";
 import { BillHeaderSection } from "./BillHeaderSection";
 import { ExpensesSection } from "./ExpensesSection";
 import { moveOnEnter } from "./LotsSection";
-import { LAYOUTS, type LayoutInfo } from "./layouts";
 import type { Desk } from "./useBillDesk";
 
 export const show = (v: bigint | null) => (v === null ? "—" : formatScaled(v));
 
-/** TEMPORARY: switches between the layouts of the bill entry without losing what was typed (the page stays mounted). */
-export function LayoutSwitcher({ current }: { current: LayoutInfo }) {
-  const router = useRouter();
-  return (
-    <nav className="layout-switch" aria-label="Layout (temporary)" data-testid="layout-switch">
-      <span className="ls-label">Layout</span>
-      {LAYOUTS.map((l) => (
-        <button
-          key={l.id} type="button" className={`ls-btn${l.id === current.id ? " current" : ""}`} aria-current={l.id === current.id ? "true" : undefined}
-          title={`${l.id}. ${l.name}: ${l.note}`} data-testid={`layout-switch-${l.id}`}
-          onClick={() => router.replace(`/bills/new?layout=${l.id}`, { scroll: false })}
-        >
-          {l.id}
-        </button>
-      ))}
-    </nav>
-  );
-}
-
-/** The sticky header of every layout: title, chips, the layout switcher and Cancel / Save. `save` false leaves Save to the layout (the guided steps). */
-export function DeskHeader({ desk, layout, save = true }: { desk: Desk; layout: LayoutInfo; save?: boolean }) {
+/** The sticky header of every layout: title, chips and Cancel / Save. */
+export function DeskHeader({ desk }: { desk: Desk }) {
   const { t } = desk;
   return (
     <header className="desk-head" data-testid="bill-bar">
@@ -46,10 +25,9 @@ export function DeskHeader({ desk, layout, save = true }: { desk: Desk; layout: 
         <span className="chip draft" data-testid="bill-status">{t("bill.draft")}</span>
         <span className="chip" data-testid="bill-number-note">{t("bill.numberOnSave")}</span>
       </div>
-      <LayoutSwitcher current={layout} />
       <div className="head-actions">
         <button type="button" className="ghost" onClick={desk.cancel} data-testid="bill-cancel">{t("common.cancel")}</button>
-        {save && <button type="submit" disabled={desk.saving} data-testid="bill-save">{desk.saving ? t("bill.saving") : t("bill.save")}</button>}
+        <button type="submit" disabled={desk.saving} data-testid="bill-save">{desk.saving ? t("bill.saving") : t("bill.save")}</button>
       </div>
     </header>
   );
@@ -205,46 +183,8 @@ export function PartyTable({ desk, lotIndex }: { desk: Desk; lotIndex: number })
   );
 }
 
-/** The parties of one lot as cards: the party on top, what it bought in a 2 x 2 grid, and the calculated figures at the bottom. */
-export function PartyCards({ desk, lotIndex }: { desk: Desk; lotIndex: number }) {
-  const { t } = desk;
-  const lot = desk.draft.lots[lotIndex];
-  const i = lotIndex;
-  return (
-    <div className="partycards" onKeyDown={(e) => moveOnEnter(e)}>
-      {lot.purchasers.map((r, row) => (
-        <article key={r.key} className="partycard" data-testid="purchaser-row">
-          <div className="pc-head">
-            <MasterPicker
-              type="buyers" value={r.buyerId} known={desk.buyerKnown[r.buyerId] ?? null}
-              onChange={(id, m) => { if (m) desk.setBuyerKnown((k) => ({ ...k, [String(m.id)]: m })); desk.updatePurchaser(i, row, { buyerId: id }); }}
-              nav testId="purchaser-buyer" ariaLabel={`${t("bill.buyer")} ${row + 1}`}
-            />
-            <div className="row-actions">
-              <button type="button" className="icon-button" onClick={() => desk.duplicatePurchaser(i, row)} aria-label={`${t("bill.duplicateRow")} ${row + 1}`} title={t("bill.duplicateRow")} data-testid="purchaser-duplicate">⧉</button>
-              <button type="button" className="icon-button danger-icon" onClick={() => desk.requestRemovePurchaser(i, row)} aria-label={`${t("bill.removePurchaser")} ${row + 1}`} title={t("bill.removePurchaser")} data-testid="purchaser-remove">✕</button>
-            </div>
-          </div>
-          <div className="pc-grid">
-            <label className="field"><span className="field-label">{t("bill.col.haste")}</span><input value={r.haste} maxLength={100} onChange={(e) => desk.updatePurchaser(i, row, { haste: e.target.value })} data-nav data-testid="purchaser-haste" /></label>
-            <label className="field"><span className="field-label">{t("bill.col.pcs")}</span><input className="num" type="number" min="0" step="1" value={r.pieces} onChange={(e) => desk.updatePurchaser(i, row, { pieces: e.target.value })} data-nav data-testid="purchaser-pieces" /></label>
-            <label className="field"><span className="field-label">{t("bill.weight")}</span><input className="num" type="number" min="0" step="any" value={r.weight} onChange={(e) => desk.updatePurchaser(i, row, { weight: e.target.value })} data-nav data-testid="purchaser-weight" /></label>
-            <label className="field"><span className="field-label">{t("bill.rate")}</span><input className="num" type="number" min="0" step="any" value={r.rate} onChange={(e) => desk.updatePurchaser(i, row, { rate: e.target.value })} data-nav data-testid="purchaser-rate" /></label>
-          </div>
-          <dl className="pc-figures">
-            <div><dt>{t("bill.col.value")}</dt><dd><output data-testid="purchaser-value">{show(purchaserValue(r))}</output></dd></div>
-            <div><dt>{t("bill.col.commission")}</dt><dd><output data-testid="purchaser-commission-amount">{show(purchaserCommission(r))}</output></dd></div>
-            <div className="total"><dt>{t("bill.col.total")}</dt><dd><output data-testid="purchaser-total">{show(purchaserTotal(r))}</output></dd></div>
-          </dl>
-        </article>
-      ))}
-      <button type="button" className="partycard add" onClick={() => desk.addPurchaser(i)} data-testid="add-purchaser">+ {t("bill.addPurchaser")}</button>
-    </div>
-  );
-}
-
-/** Parties of one lot with their heading, add buttons, totals line and the notes about them (table or cards). */
-export function PartiesPanel({ desk, lotIndex, view = "table", showHeading = true }: { desk: Desk; lotIndex: number; view?: "table" | "cards"; showHeading?: boolean }) {
+/** Parties of one lot with their heading, add buttons, totals line and the notes about them. */
+export function PartiesPanel({ desk, lotIndex, showHeading = true }: { desk: Desk; lotIndex: number; showHeading?: boolean }) {
   const { t } = desk;
   const lot = desk.draft.lots[lotIndex];
   const notes = allocationNotes(lot);
@@ -256,10 +196,10 @@ export function PartiesPanel({ desk, lotIndex, view = "table", showHeading = tru
         {showHeading && <h3>{fill(t("bill.purchasers"), { n: lotIndex + 1 })}</h3>}
         <div className="row">
           <button type="button" className="secondary small" onClick={() => { desk.setSelected(lotIndex); desk.setDialog("buyers"); }} data-testid="new-buyer">+ {t("bill.newBuyer")}</button>
-          {view === "table" && <button type="button" className="secondary small" onClick={() => desk.addPurchaser(lotIndex)} data-testid="add-purchaser">+ {t("bill.addPurchaser")}</button>}
+          <button type="button" className="secondary small" onClick={() => desk.addPurchaser(lotIndex)} data-testid="add-purchaser">+ {t("bill.addPurchaser")}</button>
         </div>
       </div>
-      {view === "table" ? <PartyTable desk={desk} lotIndex={lotIndex} /> : <PartyCards desk={desk} lotIndex={lotIndex} />}
+      <PartyTable desk={desk} lotIndex={lotIndex} />
       {lot.purchasers.length > 0 && (
         <p className="alloc-strip" data-testid="alloc-strip">{fill(t("bill.allocated"), { pieces: formatScaled(allocPieces), weight: formatScaled(allocWeight) })}</p>
       )}

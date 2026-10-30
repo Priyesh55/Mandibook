@@ -53,7 +53,13 @@ Java 21, Spring Boot 4.1, PostgreSQL 16, Flyway, JPA, Spring Security with JDBC 
 | Third-party dependencies | `docs/THIRD_PARTY_NOTICES.md` |
 
 ## Known limitations
-Saved bills cannot be edited or cancelled; no ledger, payables or receivables; the print layout is a draft and real printer output was not tested; password reset, MFA and production email delivery are not built; Hindi wording needs a native-speaker review; several accounting rules are unresolved (`docs/UNRESOLVED.md`), including the meaning of the free-text "Haste" field and the basis of per-piece expenses beyond the confirmed rule.
+Saved bills cannot be edited or cancelled; no ledger, payables or receivables; the print layout is a draft and real printer output was not tested; password reset, MFA and production email delivery are not built; Hindi wording needs a native-speaker review; several accounting rules are unresolved (`docs/UNRESOLVED.md`), including the meaning of the free-text "Haste" field and whether "lot size" always means pieces (BR-110).
+
+**Per-piece expense: confirmed rule and a known deviation.** The owner confirmed (2026-10-30) that one expense-head rate applies across all lots and that the expense is calculated and rounded per lot, then the lot amounts are summed (`docs/business-rules.md` BR-005a, BR-005b, BR-005c). The current server and browser preview add the pieces of all lots first and round once, so they give the same result only for rates with up to two decimals. For rates with three or four decimals the amount can differ by up to half a paisa per lot (two lots of one piece each at a rate of 0.005 give 0.01 now, 0.02 under the confirmed rule). This is a known implementation limitation, not fixed and not covered by a test; the calculation is **not** claimed to be fully compliant (`business-rules.md`, LIM-1).
+
+**Secret scanner.** `scripts/dev/secret-scan.js` exits 0 on the tracked files because ten findings (eight synthetic test passwords and two false positives) are suppressed by a hash-based allow-list that the owner approved on 30 October 2026. The scanner is a safety net, not a guarantee: it reports at most one finding per line and examines only the first credential-like text of a line, so a second credential-like assignment added to an approved line would not be examined (`docs/QA_EVIDENCE.md` §1d).
+
+**Provenance and history.** An older desktop billing program informed some concepts, and the owner is not certain of the full scope or provenance of the earlier investigation of it; provenance has not been independently established (`docs/PROVENANCE.md`). This repository is a snapshot of a working tree with only its own commits, not the complete original development history.
 
 ## Licence
 The authors have not yet chosen a licence for this code; none is granted by this repository. Dependencies keep their own licences (`docs/THIRD_PARTY_NOTICES.md`).

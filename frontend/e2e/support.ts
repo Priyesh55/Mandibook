@@ -84,7 +84,9 @@ export const currentLotRow = (page: Page): Locator => page.locator("[data-testid
 /** Makes lot number n (0-based) the lot being edited. Everything typed in other lots stays where it is. */
 export async function chooseLot(page: Page, n: number): Promise<void> {
   await page.getByTestId("lot-tab").nth(n).click();
-  await expect(page.getByTestId("lot-detail")).toHaveAttribute("data-lot-index", String(n));
+  // every lot card shows its own parties, so the chosen lot is the card marked aria-current (and its parties block carries its index)
+  await expect(lotRow(page, n)).toHaveAttribute("aria-current", "true");
+  await expect(lotRow(page, n).getByTestId("lot-detail")).toHaveAttribute("data-lot-index", String(n));
 }
 
 /** Types the farmer-side fields of the lot being edited. Its value is calculated by the page (weight x rate), never typed. */
@@ -99,8 +101,10 @@ export async function fillLot(page: Page, v: { item: string; pieces?: string; we
 
 /** Adds a purchaser row to the lot being edited and types what that purchaser bought (weight and rate; value and commission are calculated). */
 export async function addPurchaser(page: Page, v: { buyer: string; haste?: string; pieces?: string; weight?: string; rate?: string }): Promise<void> {
-  await page.getByTestId("add-purchaser").click();
-  const row = page.getByTestId("purchaser-row").last();
+  // every lot card has its own "Add party" button and rows: work in the lot being edited
+  const lot = currentLotRow(page);
+  await lot.getByTestId("add-purchaser").click();
+  const row = lot.getByTestId("purchaser-row").last();
   await pickMaster(row.getByTestId("purchaser-buyer"), v.buyer);
   if (v.haste !== undefined) await row.getByTestId("purchaser-haste").fill(v.haste);
   if (v.pieces !== undefined) await row.getByTestId("purchaser-pieces").fill(v.pieces);

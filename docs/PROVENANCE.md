@@ -3,21 +3,27 @@
 This note says where Mandi Book came from, what influenced it, and what the history of this repository does and does not show. It is written to be accurate rather than flattering.
 
 ## 1. Prior work: the original development repository
-Mandi Book was developed with AI assistance (Claude Code) in an earlier private repository, "Mandi Business App" (10 commits, 2026-10-17 to 2026-10-20, plus a larger body of uncommitted work completed between 2026-10-20 and 2026-10-26). **This repository is a snapshot of that working tree, not a continuation of its Git history.** The submission was prepared on 2026-10-26.
+Mandi Book was developed with AI assistance (Claude Code) in an earlier private repository, "Mandi Business App" (10 commits, 2026-10-17 to 2026-10-20, plus a larger body of uncommitted work completed between 2026-10-20 and 2026-10-26; these figures come from the project's earlier records and cannot be verified from this repository). **This repository is a snapshot of that working tree, not a continuation of its Git history, and it does not contain the complete original development history.** The submission copy was first prepared on 2026-10-26 and has been corrected since; as of 2026-10-30 it has 8 commits, all dated 2026-10-26, and further changes that are not yet committed (`docs/QA_EVIDENCE.md` section 1c).
 
 ### History boundary
 - The first commit here (`chore: import MVP working-tree snapshot ...`) records the state of the original **working tree**, including files that were modified or untracked and never committed there (authentication, firm context, billing workflow, V5 to V13 migrations, most browser tests, the AI guardrails). Commits after it are genuine work done on the submission copy, with their real timestamps.
-- The 10 original commits are **not** reproduced, rewritten or imitated here. Their dates and messages are not claimed as part of this history. The original repository still exists, unchanged, and can be shown to organizers on request.
+- The 10 original commits are **not** reproduced, rewritten or imitated here. Their dates and messages are not claimed as part of this history. The original repository is held by the project owner and can be shown to organizers on request; its current state was not examined for this submission.
 - Reason for not carrying the history over: the original history contains investigation documents about another vendor's desktop product (see section 2), which are not needed to understand or run this application.
 - Consequence: this repository's Git log **does not show the full development history**. If the hackathon requires the complete original history, the original repository (or a copy of its `.git`) must be supplied instead; that decision rests with the organizers and the project owner.
 
 ## 2. Reference-informed concepts (disclosure)
-The product owner is the operator of a family aadat business. Early in the project the team investigated an older desktop billing program used in that business, to understand the domain. According to the project owner's provenance review, this investigation included:
+The product owner is the operator of a family aadat business. Early in the project the team investigated an older desktop billing program used in that business, to understand the domain. **The full scope of that investigation, and the provenance of what it produced, have not been independently established, and the project owner has told us they are unsure of both.**
+
+What has been reported, and cannot be confirmed or excluded from this repository: a provenance review described by the project owner said the investigation included
 - inspection of **database table and column identifiers** of the older program,
 - investigation of its **decompiled source**,
 - **photographs of other firms' screens** of the older program.
 
-The provenance review found **no source code and no compiled binaries of the older program in this or the original repository or its history**. The investigation documents themselves existed only in the original repository history and are not included here. Some documents in the original repository's history state that the older program was not decompiled; that statement conflicts with the review above, is not repeated in this submission and should not be relied on. Treat the review's description as authoritative, and the exact scope of the investigation as something the project owner must confirm. Nothing in this repository was copied from the older program, but the following concepts were **informed by that reference** and must not be described as independently derived:
+The same review reported finding no source code and no compiled binaries of the older program in the original repository or its history. We do not treat that report as authoritative: the owner is not certain of the scope it covered, and the investigation documents existed only in the original repository's history, which is not part of this submission. Documents in that original history are also inconsistent about whether the program was decompiled; this cannot be resolved from this repository, and neither version should be relied on.
+
+**What this repository does show (2026-10-30), and its limits.** The name of the older program does not appear in the files of this repository or in any of its 8 commits, and no file in any commit is named like an investigation, discovery or decompilation note. The seed and test data are fictitious, and a secret scan found no credentials or real business records (`docs/QA_EVIDENCE.md` section 1d). These were text and file-name searches only. No binary, decompiler or similarity analysis was done, so they cannot show that nothing was derived from or copied from the older program, and **we make no categorical statement either way.** Anyone relying on this note should treat provenance as unverified and the owner's confirmation as outstanding.
+
+The following concepts were, or may have been, **informed by that reference** (the owner's earlier review lists them as such) and must not be described as independently derived; the full extent of the influence is not established:
 
 | Area in Mandi Book | Reference-informed? |
 |---|---|
@@ -29,7 +35,7 @@ The provenance review found **no source code and no compiled binaries of the old
 | Lot-mark (*marka*) field, village-first farmer selection, continuous per-firm bill numbering across financial years (1 April to 31 March) | Domain practice of the owner's firm, possibly also visible in the older program |
 | Screen layout and printed bill | Own design (white-and-blue theme, keyboard grids); informed in general terms by what counter staff already know. The print layout is a draft (BR-107) |
 
-Not done: no data of the older program, no credentials, no real firm, farmer, buyer or bill is in the code, tests, seed or screenshots. The seed is fictitious (`R__synthetic_demo_data.sql`).
+Data: the seed is fictitious (`R__synthetic_demo_data.sql`), tests and screenshots use synthetic names, and the searches and scan above found no real firm, farmer, buyer or bill and no credentials in this repository. As stated above, this does not establish provenance.
 
 Leftover references: `V1__baseline_schema.sql` still contains a comment that points to a document (`LEGACY_BEHAVIOR_FINDINGS.md`) that is not part of this submission. It was left unchanged because editing an applied Flyway migration changes its checksum.
 
@@ -41,5 +47,7 @@ Per-piece expense rates are master data that each firm configures; the applicati
 ## 4. AI contribution
 Almost all code, tests and documents were produced by an AI agent (Claude Code, model recorded in commit trailers) in sessions directed and reviewed by the project owner, who made the product and business-rule decisions. See `docs/ai-log.md` (which also records AI mistakes) and `CLAUDE.md` / `docs/AI_POLICY.md` for the controls used. Prompts and transcripts are not stored.
 
+**Second AI tool: ChatGPT (OpenAI).** ChatGPT supported planning, architecture discussions, prompt preparation and technical review, alongside Claude Code, which did the implementation. **The project owner confirmed on 30 October 2026 that this description is accurate.** This repository holds no ChatGPT conversation, prompt or output, so the use cannot be verified from it, and nothing in it shows ChatGPT writing or committing application code; no such claim is made. The commit trailers name Claude only.
+
 ## 5. Third-party material
-No third-party source code is vendored. Dependencies are declared in `backend/pom.xml` and `frontend/package.json`; see `docs/THIRD_PARTY_NOTICES.md`.
+We know of no third-party library source vendored in the repository: dependencies are declared in `backend/pom.xml` and `frontend/package.json`; see `docs/THIRD_PARTY_NOTICES.md`. This has not been checked with a licence or provenance scanner, and it says nothing about the older program in section 2.
